@@ -1,0 +1,19 @@
+# Construction Site Safety Dataset Configuration
+train: /root/gpufree-data/1005_report/YOLO_Retraining/css-data/train/images
+val: /root/gpufree-data/1005_report/YOLO_Retraining/css-data/valid/images
+test: /root/gpufree-data/1005_report/YOLO_Retraining/css-data/test/images
+
+nc: 10
+names:
+  [
+    "Hardhat",
+    "Mask",
+    "NO-Hardhat",
+    "NO-Mask",
+    "NO-Safety Vest",
+    "Person",
+    "Safety Cone",
+    "Safety Vest",
+    "machinery",
+    "vehicle",
+  ]
