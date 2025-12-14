@@ -87,12 +87,12 @@ class CFG:
     NUM_CLASSES_TO_TRAIN = len(CLASSES)
     EPOCHS = 3
     BATCH_SIZE = 220
-    BASE_MODEL = r'/root/gpufree-data/1005_report/YOLO_Retraining/yolov8n.pt'
+    BASE_MODEL = 'yolov8n.pt'
     MODEL_WEIGHTS_NAME = 'SafetyHelmetWearing.pt' 
-    EXP_NAME = f'css_ppe_fast'
-    DATA_YAML_PATH = r'/root/gpufree-data/1005_report/YOLO_Retraining/data.yaml'
-    CSS_DATA_PATH = r'/root/gpufree-data/1005_report/YOLO_Retraining/css-data'
-    OUTPUT_DIR = r'/root/gpufree-data/1005_report/YOLO_Retraining/runs'
+    EXP_NAME = 'css_ppe_fast'
+    DATA_YAML_PATH = 'data.yaml'
+    CSS_DATA_PATH = 'css-data'
+    OUTPUT_DIR = 'runs'
     DEVICE = 0 if torch.cuda.is_available() else 'cpu'
     CLEAN_PREVIOUS_RUNS = True
 def set_seed(seed=CFG.SEED):
@@ -154,7 +154,7 @@ def apply_random_erasing(images, p=0.5, sl=0.02, sh=0.4, r1=0.3):
     aspect_ratio = np.random.uniform(r1, 1/r1)
     return target_area,aspect_ratio
 def cleanup_previous_training():
-    output_path = Path(r'/root/gpufree-data/1005_report/YOLO_Retraining/runs') / CFG.EXP_NAME
+    output_path = Path(CFG.OUTPUT_DIR) / CFG.EXP_NAME
     if output_path.exists():
         print(f"[INFO] 清理之前的训练结果: {output_path}")
         import shutil
@@ -173,8 +173,7 @@ def train_model():
     if CFG.CLEAN_PREVIOUS_RUNS:
         cleanup_previous_training()
     
-    output_dir = r'/root/gpufree-data/1005_report/YOLO_Retraining/runs'
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(CFG.OUTPUT_DIR, exist_ok=True)
     
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -195,8 +194,8 @@ def train_model():
         'imgsz': 320,
         'device': CFG.DEVICE,
         'workers': min(2, multiprocessing.cpu_count()) if platform.system() == 'Windows' else 4,
-        'project': r'/root/gpufree-data/1005_report/YOLO_Retraining',
-        'name': f'runs/{CFG.EXP_NAME}',
+        'project': '.',
+        'name': f'{CFG.OUTPUT_DIR}/{CFG.EXP_NAME}',
         'cache': 'disk',
         'single_cls': False,
         'rect': False,
@@ -222,8 +221,8 @@ def train_model():
     try:
         results = model.train(**train_args)
         
-        default_weights_path = Path(r'/root/gpufree-data/1005_report/YOLO_Retraining/runs') / CFG.EXP_NAME / 'weights' / 'best.pt'
-        custom_weights_path = Path(r'/root/gpufree-data/1005_report/YOLO_Retraining/runs') / CFG.EXP_NAME / 'weights' / CFG.MODEL_WEIGHTS_NAME
+        default_weights_path = Path(CFG.OUTPUT_DIR) / CFG.EXP_NAME / 'weights' / 'best.pt'
+        custom_weights_path = Path(CFG.OUTPUT_DIR) / CFG.EXP_NAME / 'weights' / CFG.MODEL_WEIGHTS_NAME
         
         if default_weights_path.exists():
             if custom_weights_path.exists():
